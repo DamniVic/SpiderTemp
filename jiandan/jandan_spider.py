@@ -8,10 +8,10 @@ headers = {'referer': 'http://jandan.net/', 'user-agent': 'Mozilla/5.0 (Windows 
 # 保存图片
 def save_jpg(res_url):
     global index
-    html = BeautifulSoup(requests.get(res_url, headers=headers).text)
-    for link in html.find_all('a', {'class': 'view_img_link'}):
-        with open('{}.{}'.format(index, link.get('href')[len(link.get('href'))-3: len(link.get('href'))]), 'wb') as jpg:
-            jpg.write(requests.get("http:" + link.get('href')).content)
+    html = BeautifulSoup(requests.get(res_url, headers=headers).text)  # 获取网页数据，并将其转换为beautifulsoup对象
+    for link in html.find_all('a', {'class': 'view_img_link'}):  # 从网页源码里面抓取图片的链接
+        with open('{}.{}'.format(index, link.get('href')[len(link.get('href'))-3: len(link.get('href'))]), 'wb') as jpg:  # 抓取链接里面图片的后缀，并新建新的图片文件
+            jpg.write(requests.get("http:" + link.get('href')).content)  # 将图片保存在本地
         print("正在抓取第%s条数据" % index)
         index += 1
 
@@ -20,5 +20,5 @@ def save_jpg(res_url):
 if __name__ == '__main__':
     url = 'http://jandan.net/ooxx'
     for i in range(0, 5):
-        save_jpg(url)
-        url = BeautifulSoup(requests.get(url, headers=headers).text).find('a', {'class': 'previous-comment-page'}).get('href')
+        save_jpg(url)  # 下载图片
+        url = BeautifulSoup(requests.get(url, headers=headers).text).find('a', {'class': 'previous-comment-page'}).get('href')  # 获取下一页的URL
