@@ -37,3 +37,5 @@ def geturl(num):
 
 if __name__ == '__main__':
     main()
+    # url = 'http://p4.music.126.net/BsD69agtHXcTN4Eh6CZdSg==/19064432114241725.jpg?param=177y177'
+    # downloadImageFile(url)

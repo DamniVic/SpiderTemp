@@ -1,7 +1,12 @@
-# user/bin/env python3
-# -*- coding:utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Created by DAMNICOMNIPLUSVIC on 2017/7/14.
+# * (c) 2017 DAMNICOMNIPLUSVIC Inc,All Rights Reserved.
 import os
+import re
 import traceback
+from time import sleep
+
 import requests
 import sys
 from selenium import webdriver
@@ -24,27 +29,27 @@ class Spider:
     def __init__(self):
         self.driver = webdriver.Chrome()  # 初始化这个类，这里仅仅指明了用哪个浏览器
     def execute(self):
-        self.login()  # 登录图虫
-        self.album('3')  # 去到编号为3这个人的相册
+        self.login()  # 登录百度云
     def login(self):
-        self.driver.get('https://tuchong.com/')  # 打开图虫网页
+        self.driver.get('https://pan.baidu.com/')  # 打开百度网页
         print(self.driver.title)
         # login = self.driver.find_element_by_link_text('登录')
-        login = self.driver.find_element_by_xpath('/html/body/header/nav/div[2]/a[1]')  # 找到图虫首页上面的登录按钮，这里采用的是xpath方式
-        print(login)
-        if not login is None:  # 判断找到的登录按钮是否为空
-            login.click()  # 点击登录按钮
-            self.driver.switch_to.alert  # 将当前driver的焦点转移到弹出的对话框
-            account = self.driver.find_element_by_xpath('//*[@id="login-dialog"]/div/div/div/div[1]/form/div[2]/input')  # 找到输入账号的输入框
-            password = self.driver.find_element_by_xpath('//*[@id="login-dialog"]/div/div/div/div[1]/form/div[3]/input')  # 找到输入密码的输入框
-            loginbtn = self.driver.find_element_by_xpath('//*[@id="login-dialog"]/div/div/div/div[1]/form/div[6]/button')  # 找到登录的按钮
-            account.send_keys('图虫账号')  # 输入账号
-            password.send_keys('图虫密码')  # 输入密码
+        accountlogin = self.driver.find_element_by_xpath('//*[@id="login-middle"]/div/div[6]/div[2]/a')  # 找到图虫首页上面的登录按钮，这里采用的是xpath方式
+        print(accountlogin)
+        if not accountlogin is None:  # 判断找到的登录按钮是否为空
+            accountlogin.click()  # 点击登录按钮
+            account = self.driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_4__userName"]')  # 找到输入账号的输入框
+            password = self.driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_4__password"]')  # 找到输入密码的输入框
+            loginbtn = self.driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_4__submit"]')  # 找到登录的按钮
+            account.send_keys('百度账号')  # 输入账号
+            password.send_keys('百度密码')  # 输入密码
             loginbtn.click()  # 点击登录
             self.driver.refresh()  # 刷新driver，让网页本身获取焦点
             print(self.driver.title)  # 打印标题
-    def album(self, num):
-        url = 'https://tuchong.com/%s/albums' % (str(num),)  # 输入ID为num的账户的相册URL（因为上面已经登录了，所以这里不会要求重新登录）
+            self.loadall()
+            self.driver.quit()
+    def album(self):
+        url = 'https://tuchong.com/%s/albums'  # 输入ID为num的账户的相册URL（因为上面已经登录了，所以这里不会要求重新登录）
         self.driver.get(url)
         self.driver.refresh()  # 刷新driver获取当前网页的焦点
         print(self.driver.title)  # 打印当前网页的标题
@@ -72,6 +77,14 @@ class Spider:
                 self.driver.back()
                 self.driver.refresh()
         self.driver.quit()  # 所有的代码执行完，就退出这次程序
+    def loadall(self):
+        source = self.driver.page_source
+        pattern = re.compile(r'<span class="FcucHsb">已全部加载，共(\d+)个</span>')
+        mattern = re.findall(pattern, source)
+        for item in mattern:
+            print(item)
+            return True
+        return False
 
 
 
